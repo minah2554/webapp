@@ -88,7 +88,7 @@ function generateDocument(title, roleName, outPath) {
                         new TableRow({
                             children: [
                                 createCell("접속경로", true, AlignmentType.CENTER, 15, "f1f5f9"),
-                                createCell("https://web-portal-ten-roan.vercel.app", false, AlignmentType.LEFT, 85, null, 3),
+                                createCell("https://minah-s-digital-platform.web.app", false, AlignmentType.LEFT, 85, null, 3),
                             ]
                         }),
                         new TableRow({
