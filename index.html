@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>학습용 웹앱 포털</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chiron+GoRound+TC:wght@200..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Chiron GoRound TC', 'Noto Sans KR', sans-serif;
+            background-color: #f1f3f7;
+        }
+        .canva-gradient {
+            background: linear-gradient(135deg, #7f56d9 0%, #ff7e5f 100%);
+        }
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(16px);
+        }
+        /* Custom scrollbar for better styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f3f7;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-800 antialiased selection:bg-blue-100">
+
+    <!-- NAVIGATION BAR -->
+    <nav class="glass-nav sticky top-0 z-40 border-b border-slate-100 px-6 py-4 transition-all duration-300 shadow-sm">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-2xl canva-gradient flex items-center justify-center text-white font-extrabold text-xl shadow-md shadow-purple-200">
+                    M
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-lg text-slate-900 tracking-tight">학습용 웹앱 포털</h1>
+                    <span class="text-xs text-purple-600 font-semibold tracking-wide">민아쌤의 디지털 학습 플랫폼</span>
+                </div>
+            </div>
+            
+            <button onclick="openModal()" class="flex items-center space-x-2 px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-2xl font-bold text-sm transition-all shadow-md shadow-purple-100 hover:shadow-lg hover:shadow-purple-200 hover:-translate-y-0.5 active:translate-y-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                </svg>
+                <span>+ 웹앱 추가하기</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- MAIN BODY -->
+    <main class="max-w-7xl mx-auto px-6 py-10">
+        
+        <!-- HEADER TITLE -->
+        <div class="mb-8">
+            <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight mb-1.5">학습용 웹앱 포털</h2>
+            <p class="text-slate-500 text-sm">민아쌤의 디지털 학습 플랫폼에 등록된 유용하고 흥미진진한 모든 웹앱을 만나보세요.</p>
+        </div>
+
+        <!-- SEARCH, SORT, FILTER PANEL (Exactly matches the layout in the image) -->
+        <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100/80 mb-10">
+            <!-- Search & Sort Controls -->
+            <div class="flex flex-col md:flex-row gap-4 mb-6">
+                <!-- Search Input with Magnifier -->
+                <div class="relative flex-grow">
+                    <span class="absolute inset-y-0 left-0 pl-4.5 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </span>
+                    <input type="text" id="searchInput" oninput="handleSearch()" placeholder="앱 이름, 한 줄 설명, 난이도를 검색해보세요..." 
+                        class="block w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-100/80 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 border-none text-sm sm:text-base font-medium">
+                </div>
+                
+                <!-- Sort Dropdown -->
+                <div class="w-full md:w-56">
+                    <select id="sortSelect" onchange="handleSort()" 
+                        class="block w-full px-4 py-4 rounded-2xl bg-slate-100/80 border-none focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-bold text-slate-700 cursor-pointer">
+                        <option value="latest">최신 등록순</option>
+                        <option value="name">이름순</option>
+                        <option value="difficultyDesc">난이도 높은순</option>
+                        <option value="difficultyAsc">난이도 낮은순</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Category Filter Tabs -->
+            <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+                <span class="text-xs font-bold text-slate-400 tracking-wider uppercase shrink-0">과목 필터</span>
+                <div class="flex flex-wrap gap-2" id="categoryTabs">
+                    <!-- Dynamic categories are generated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- APP COUNT LABEL -->
+        <div class="flex justify-between items-center mb-6">
+            <span class="text-sm font-bold text-slate-500" id="itemCount">불러오는 중...</span>
+        </div>
+
+        <!-- PORTAL GRID -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="appsGrid">
+            <!-- Dynamic app cards are loaded here -->
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-slate-200 bg-white py-12 mt-24 text-center text-slate-400 text-sm">
+        <div class="max-w-7xl mx-auto px-6 space-y-4">
+            <!-- Policy Links -->
+            <div class="flex justify-center space-x-6 text-xs font-bold text-slate-500 mb-2">
+                <button onclick="openPolicyModal('terms')" class="hover:text-purple-600 transition-colors">이용약관</button>
+                <span class="text-slate-300">|</span>
+                <button onclick="openPolicyModal('privacy')" class="hover:text-purple-600 transition-colors">개인정보처리방침</button>
+            </div>
+
+            <!-- Developer Info & Copyright -->
+            <div class="text-xs space-y-1.5 text-slate-400">
+                <p class="font-bold text-slate-700 mb-1">💡 MINAH'S CLASSPLAY LAB</p>
+                <p>개인정보 보호책임자: 홍민아 (우신중학교 교사) | 연락처: 02-2610-1621</p>
+                <p class="text-[11px] mt-2">Copyright © 2026 학습용 웹앱 포털. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- POLICY MODAL -->
+    <div id="policyModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <!-- Modal Background overlay -->
+            <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="closePolicyModal()"></div>
+
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+            <!-- Modal Panel -->
+            <div class="inline-block align-bottom bg-white rounded-[32px] text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full border border-slate-100">
+                <div class="bg-white p-6 sm:p-8">
+                    <!-- Title -->
+                    <div class="flex justify-between items-center pb-4 mb-6 border-b border-slate-100">
+                        <h3 class="text-xl font-extrabold text-slate-900 flex items-center space-x-2">
+                            <span id="policyModalTitle">이용약관 및 개인정보처리방침</span>
+                        </h3>
+                        <button onclick="closePolicyModal()" class="text-slate-400 hover:text-slate-600 hover:bg-slate-50 p-2 rounded-full transition-all">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Policy Content Area (Scrollable) -->
+                    <div id="policyModalContent" class="max-h-[60vh] overflow-y-auto pr-2 text-slate-600">
+                        <!-- Dynamic content goes here -->
+                    </div>
+
+                    <div class="pt-6 mt-4 border-t border-slate-100 flex justify-end">
+                        <button onclick="closePolicyModal()" class="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-2xl font-bold text-sm transition-all shadow-md shadow-purple-100">
+                            확인
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADD APP MODAL -->
+    <div id="addModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <!-- Modal Background overlay -->
+            <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="closeModal()"></div>
+
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+            <!-- Modal Panel -->
+            <div class="inline-block align-bottom bg-white rounded-[32px] text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-slate-100">
+                <div class="bg-white p-6 sm:p-8">
+                    <!-- Form Title -->
+                    <div class="flex justify-between items-center pb-4 mb-6 border-b border-slate-100">
+                        <h3 class="text-xl font-extrabold text-slate-900 flex items-center space-x-2">
+                            <span>✨</span> <span>새로운 학습용 웹앱 등록</span>
+                        </h3>
+                        <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 hover:bg-slate-50 p-2 rounded-full transition-all">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Alert Banner -->
+                    <div id="formError" class="hidden mb-5 p-4 bg-rose-50 border border-rose-100 text-rose-700 rounded-2xl text-xs font-bold flex items-center space-x-2">
+                        <svg class="h-4 w-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                        </svg>
+                        <span id="errorMsg"></span>
+                    </div>
+
+                    <form id="addAppForm" onsubmit="saveApp(event)" class="space-y-4">
+                        <!-- Admin Verification -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">관리자 인증 코드</label>
+                            <input type="password" id="adminCode" required placeholder="비밀번호를 입력하세요 (기본: classplay)" 
+                                class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:bg-white text-sm font-semibold">
+                        </div>
+
+                        <!-- App Title -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">웹앱 이름</label>
+                            <input type="text" id="appTitle" required placeholder="예: 분수 계산 연습기" 
+                                class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:bg-white text-sm font-semibold">
+                        </div>
+
+                        <!-- App URL -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">웹앱 주소 (Link)</label>
+                            <input type="url" id="appUrl" required placeholder="https://..." 
+                                class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:bg-white text-sm font-semibold">
+                        </div>
+
+                        <!-- App Description -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">한 줄 소개</label>
+                            <textarea id="appDesc" required rows="2" placeholder="앱의 학습 목적과 특징을 짧게 작성해주세요." 
+                                class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:bg-white text-sm font-semibold resize-none"></textarea>
+                        </div>
+
+                        <!-- Grid row for configuration -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <!-- Category Selection -->
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">카테고리</label>
+                                <select id="appCategory" class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:bg-white text-sm font-bold text-slate-700">
+                                    <option value="수업">🎨 수업</option>
+                                    <option value="교과">📐 교과</option>
+                                    <option value="학급">🏫 학급</option>
+                                    <option value="업무">💼 업무</option>
+                                    <option value="기타">💡 기타</option>
+                                </select>
+                            </div>
+
+                            <!-- Difficulty -->
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">학습 난이도</label>
+                                <select id="appDifficulty" class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white text-sm font-bold text-slate-700">
+                                    <option value="하">하</option>
+                                    <option value="중">중</option>
+                                    <option value="상">상</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <!-- Duration -->
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">소요 시간 (분 단위)</label>
+                                <input type="number" id="appDuration" required min="1" max="120" placeholder="15" 
+                                    class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white text-sm font-semibold">
+                            </div>
+
+                            <!-- Icon theme / Backplate -->
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">테마 색상 (기본 아이콘용)</label>
+                                <select id="appTheme" class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white text-sm font-bold text-slate-700">
+                                    <option value="indigo">💜 보라 (Indigo)</option>
+                                    <option value="cyan">💙 파랑 (Cyan)</option>
+                                    <option value="emerald">💚 녹색 (Emerald)</option>
+                                    <option value="amber">💛 노랑 (Amber)</option>
+                                    <option value="rose">💖 빨강 (Rose)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Checkbox for Badges -->
+                        <div class="flex space-x-6 py-2">
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="checkbox" id="badgeNew" class="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500">
+                                <span class="text-xs font-bold text-slate-600">NEW 태그 표시</span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="checkbox" id="badgeRecommend" class="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500">
+                                <span class="text-xs font-bold text-slate-600">추천 뱃지 표시</span>
+                            </label>
+                        </div>
+
+                        <!-- Thumbnail File Upload -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">썸네일 이미지 업로드 (선택)</label>
+                            <input type="file" id="appThumbnailFile" accept="image/*" onchange="previewThumbnail(event)"
+                                class="w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-2xl file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition-all cursor-pointer">
+                            <div id="thumbnailPreviewContainer" class="hidden mt-3 p-2 border border-slate-100 rounded-2xl bg-slate-50 flex flex-col items-center">
+                                <span class="text-[10px] text-slate-400 mb-1">업로드 이미지 미리보기</span>
+                                <img id="thumbnailPreview" class="h-28 w-auto object-contain rounded-xl shadow-sm" src="" alt="미리보기">
+                            </div>
+                        </div>
+
+                        <div class="pt-4 flex space-x-3">
+                            <button type="button" onclick="closeModal()" class="w-1/2 py-3.5 border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-2xl font-bold text-sm transition-all">
+                                취소
+                            </button>
+                            <button type="submit" class="w-1/2 py-3.5 bg-purple-600 hover:bg-purple-700 text-white rounded-2xl font-bold text-sm transition-all shadow-md shadow-purple-100">
+                                대시보드 등록
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DETAIL INFO MODAL (Clicking "상세") -->
+    <div id="detailModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="closeDetailModal()"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            
+            <div class="inline-block align-bottom bg-white rounded-[32px] text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full border border-slate-100">
+                <div class="bg-white p-6 sm:p-8">
+                    <div class="flex justify-between items-start mb-4">
+                        <span id="modalCategory" class="px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-600 tracking-wider">과학</span>
+                        <button onclick="closeDetailModal()" class="text-slate-400 hover:text-slate-600 hover:bg-slate-50 p-1.5 rounded-full transition-all">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <h3 id="modalTitle" class="text-2xl font-extrabold text-slate-900 leading-snug mb-3">앱 제목</h3>
+                    <p id="modalDesc" class="text-sm text-slate-500 leading-relaxed mb-6 font-normal">앱 상세 정보 설명칸입니다.</p>
+                    
+                    <div class="bg-slate-50 rounded-2xl p-4 mb-6 space-y-3">
+                        <div class="flex justify-between items-center text-sm font-semibold">
+                            <span class="text-slate-400">📊 학습 난이도</span>
+                            <span id="modalDifficulty" class="text-slate-700">중</span>
+                        </div>
+                        <div class="flex justify-between items-center text-sm font-semibold">
+                            <span class="text-slate-400">⏱️ 권장 소요 시간</span>
+                            <span id="modalDuration" class="text-slate-700">15분</span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex space-x-3">
+                        <button onclick="closeDetailModal()" class="w-1/3 py-3 border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-2xl font-bold text-sm transition-all">
+                            닫기
+                        </button>
+                        <a id="modalLaunchBtn" href="" target="_blank" class="w-2/3 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-2xl font-bold text-sm transition-all shadow-md shadow-purple-100 text-center flex items-center justify-center space-x-1.5">
+                            <span>실행하기</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN JAVASCRIPT LOGIC -->
+    <script>
+        // Preset default educational apps matched with styling structure
+        const initialApps = [
+            {
+                id: "light-color-lab",
+                title: "조명에 따른 물체의 색 시뮬레이터",
+                url: "https://minah2554.github.io/light-color-lab/",
+                description: "빛의 삼원색 조합에 따라 다양한 물체가 어떤 색으로 반사되어 보이는지 직관적으로 탐구하는 실시간 웹 시뮬레이터입니다.",
+                category: "교과",
+                theme: "indigo",
+                difficulty: "중",
+                duration: "15",
+                isNew: true,
+                isRecommended: false,
+                isPreset: true,
+                svgIcon: `
+                    <svg viewBox="0 0 100 100" class="w-12 h-12">
+                        <circle cx="42" cy="42" r="18" fill="#ef4444" opacity="0.8" style="mix-blend-mode: screen;" />
+                        <circle cx="58" cy="42" r="18" fill="#22c55e" opacity="0.8" style="mix-blend-mode: screen;" />
+                        <circle cx="50" cy="58" r="18" fill="#3b82f6" opacity="0.8" style="mix-blend-mode: screen;" />
+                        <circle cx="50" cy="48" r="8" fill="#ffffff" />
+                    </svg>
+                `
+            },
+            {
+                id: "mirror-escape",
+                title: "과학 복도 방탈출: 거울 세계의 깨진 진실",
+                url: "https://mirrorescape.lovable.app",
+                description: "학교 과학실 복도를 무대로 거울의 성질, 반사 원리, 좌표 대칭 지식을 활용해 미션을 깨고 탈출하는 긴장 만점 스토리 게임입니다.",
+                category: "수업",
+                theme: "rose",
+                difficulty: "상",
+                duration: "30",
+                isNew: false,
+                isRecommended: true,
+                isPreset: true,
+                svgIcon: `
+                    <svg viewBox="0 0 100 100" class="w-12 h-12">
+                        <path d="M20,40 L50,15 L80,30 L75,75 L30,85 Z" fill="#f43f5e" opacity="0.15" />
+                        <path d="M50,15 L50,85 M20,40 L80,30 M30,85 L75,75" stroke="#f43f5e" stroke-width="2" stroke-dasharray="2 2" />
+                        <circle cx="50" cy="45" r="12" stroke="#f43f5e" stroke-width="4.5" fill="none" />
+                        <path d="M50,57 L50,78 M45,70 L55,70 M45,76 L55,76" stroke="#f43f5e" stroke-width="4.5" stroke-linecap="round" />
+                    </svg>
+                `
+            },
+            {
+                id: "classpi-exchange",
+                title: "학급 CLASSPI 거래소",
+                url: "https://script.google.com/macros/s/AKfycbyamUG7puvX4wcSUGWay_YB5iVx8EiwRsaj9RpARQkRL53PrqKtongcCvjeVuQz37jP/exec",
+                description: "학급 전용 가상 화폐 CLASSPI 시스템! 자산 현황 파악, 경제 트렌드 체험, 상점 및 입찰 기능을 통합 관리하는 학급 금융 포털입니다.",
+                category: "학급",
+                theme: "emerald",
+                difficulty: "하",
+                duration: "10",
+                isNew: false,
+                isRecommended: true,
+                isPreset: true,
+                svgIcon: `
+                    <svg viewBox="0 0 100 100" class="w-12 h-12">
+                        <circle cx="50" cy="50" r="30" fill="#10b981" opacity="0.15" />
+                        <circle cx="50" cy="50" r="24" stroke="#10b981" stroke-width="4" fill="none" />
+                        <path d="M40,43 L60,43 M44,43 L44,59 M55,43 L55,59 C55,62 57,61 59,59" stroke="#10b981" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+                        <path d="M72,28 L82,28 L82,38 M82,28 L64,46" stroke="#10b981" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+                    </svg>
+                `
+            },
+            {
+                id: "ready-player-draw",
+                title: "READY PLAYER DRAW (오락실 추첨기)",
+                url: "https://my-first-repo-2fk5.vercel.app",
+                description: "네온 테마와 오락실 전용 흥겨운 BGM으로 집중도를 한껏 올리는 학급 발표자 추첨 및 랜덤 아이템 선택 유틸리티입니다.",
+                category: "수업",
+                theme: "amber",
+                difficulty: "하",
+                duration: "5",
+                isNew: true,
+                isRecommended: false,
+                isPreset: true,
+                svgIcon: `
+                    <svg viewBox="0 0 100 100" class="w-12 h-12">
+                        <rect x="25" y="25" width="50" height="50" rx="12" fill="#f59e0b" opacity="0.15" />
+                        <line x1="50" y1="55" x2="35" y2="35" stroke="#f59e0b" stroke-width="6" stroke-linecap="round" />
+                        <circle cx="32" cy="32" r="11" fill="#ef4444" />
+                        <circle cx="65" cy="55" r="5" fill="#f59e0b" />
+                        <circle cx="53" cy="63" r="5" fill="#f59e0b" />
+                    </svg>
+                `
+            }
+        ];
+
+        // System Constants & State
+        const ADMIN_CODE = "classplay"; // 관리자 비밀번호
+        let apps = [];
+        let currentCategory = "전체";
+        let currentSearchQuery = "";
+        let currentSort = "latest";
+        let uploadedImageBase64 = "";
+
+        // UI Theme mappings for Categories & Fallbacks
+        const themeMap = {
+            indigo: { bg: "bg-indigo-50", text: "text-indigo-600", stroke: "#6366f1", btn: "hover:bg-indigo-600 hover:text-white" },
+            cyan: { bg: "bg-cyan-50", text: "text-cyan-600", stroke: "#06b6d4", btn: "hover:bg-cyan-600 hover:text-white" },
+            emerald: { bg: "bg-emerald-50", text: "text-emerald-600", stroke: "#10b981", btn: "hover:bg-emerald-600 hover:text-white" },
+            amber: { bg: "bg-amber-50", text: "text-amber-600", stroke: "#f59e0b", btn: "hover:bg-amber-600 hover:text-white" },
+            rose: { bg: "bg-rose-50", text: "text-rose-600", stroke: "#f43f5e", btn: "hover:bg-rose-600 hover:text-white" }
+        };
+
+        // Category Standard Icons if no SVG or Uploaded image exists
+        const genericIcons = {
+            indigo: (color) => `<svg viewBox="0 0 100 100" class="w-12 h-12"><rect x="25" y="25" width="50" height="50" rx="12" fill="${color}" opacity="0.15"/><path d="M35,50 L45,60 L65,40" stroke="${color}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>`,
+            cyan: (color) => `<svg viewBox="0 0 100 100" class="w-12 h-12"><circle cx="50" cy="50" r="28" fill="${color}" opacity="0.15"/><circle cx="50" cy="50" r="18" stroke="${color}" stroke-width="4.5" fill="none"/><line x1="50" y1="20" x2="50" y2="80" stroke="${color}" stroke-width="4"/><line x1="20" y1="50" x2="80" y2="50" stroke="${color}" stroke-width="4"/></svg>`,
+            emerald: (color) => `<svg viewBox="0 0 100 100" class="w-12 h-12"><polygon points="50,15 80,75 20,75" fill="${color}" opacity="0.15" stroke="${color}" stroke-width="4" stroke-linejoin="round"/><circle cx="50" cy="55" r="8" stroke="${color}" stroke-width="4" fill="none"/></svg>`,
+            amber: (color) => `<svg viewBox="0 0 100 100" class="w-12 h-12"><rect x="25" y="25" width="50" height="50" rx="12" fill="${color}" opacity="0.15"/><circle cx="50" cy="50" r="12" stroke="${color}" stroke-width="5" fill="none"/><path d="M50,20 L50,30 M50,70 L50,80 M20,50 L30,50 M70,50 L80,50" stroke="${color}" stroke-width="4" stroke-linecap="round"/></svg>`,
+            rose: (color) => `<svg viewBox="0 0 100 100" class="w-12 h-12"><rect x="25" y="25" width="50" height="50" rx="12" fill="${color}" opacity="0.15"/><path d="M40,35 L60,35 M50,35 L50,70" stroke="${color}" stroke-width="6.5" stroke-linecap="round"/><path d="M40,70 L60,70" stroke="${color}" stroke-width="6.5" stroke-linecap="round"/></svg>`
+        };
+
+        // Static list of school subjects (Exactly mapping to the image uploaded by user)
+        const FIXED_CATEGORIES = ["전체", "수업", "교과", "학급", "업무", "기타"];
+
+        // Init on window load
+        window.addEventListener('DOMContentLoaded', () => {
+            loadApps();
+            renderCategoryTabs();
+            renderApps();
+        });
+
+        // Load DB from local storage
+        function loadApps() {
+            const savedData = localStorage.getItem('minah_portal_apps');
+            if (savedData) {
+                try {
+                    apps = JSON.parse(savedData);
+                } catch (e) {
+                    apps = [...initialApps];
+                }
+            } else {
+                apps = [...initialApps];
+                saveToLocalStorage();
+            }
+        }
+
+        function saveToLocalStorage() {
+            localStorage.setItem('minah_portal_apps', JSON.stringify(apps));
+        }
+
+        // Render 과목 필터 Tabs
+        function renderCategoryTabs() {
+            const tabContainer = document.getElementById('categoryTabs');
+            
+            tabContainer.innerHTML = FIXED_CATEGORIES.map(cat => {
+                const isActive = currentCategory === cat;
+                return `
+                    <button onclick="setCategory('${cat}')" 
+                        class="px-4 py-1.5 text-xs sm:text-sm font-semibold rounded-full transition-all duration-200 
+                        ${isActive 
+                            ? 'bg-blue-600 text-white shadow-sm' 
+                            : 'bg-slate-100 hover:bg-slate-200/80 text-slate-600'
+                        }">
+                        <span>${cat}</span>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function setCategory(cat) {
+            currentCategory = cat;
+            renderCategoryTabs();
+            renderApps();
+        }
+
+        // Search inputs handler
+        function handleSearch() {
+            currentSearchQuery = document.getElementById('searchInput').value.trim().toLowerCase();
+            renderApps();
+        }
+
+        // Sort option handler
+        function handleSort() {
+            currentSort = document.getElementById('sortSelect').value;
+            renderApps();
+        }
+
+        // Sort calculation method
+        function getSortedApps(appList) {
+            const list = [...appList];
+            if (currentSort === "latest") {
+                // Descending order of registration (using index or unique stamp inside id)
+                return list.reverse();
+            } else if (currentSort === "name") {
+                return list.sort((a, b) => a.title.localeCompare(b.title, 'ko'));
+            } else if (currentSort === "difficultyDesc") {
+                // High to Low (상 -> 중 -> 하)
+                const diffMap = { "상": 3, "중": 2, "하": 1 };
+                return list.sort((a, b) => (diffMap[b.difficulty] || 0) - (diffMap[a.difficulty] || 0));
+            } else if (currentSort === "difficultyAsc") {
+                // Low to High (하 -> 중 -> 상)
+                const diffMap = { "상": 3, "중": 2, "하": 1 };
+                return list.sort((a, b) => (diffMap[a.difficulty] || 0) - (diffMap[b.difficulty] || 0));
+            }
+            return list;
+        }
+
+        // Render Portal Cards Grid
+        function renderApps() {
+            const grid = document.getElementById('appsGrid');
+            
+            // Search & Category Filtering
+            const filtered = apps.filter(app => {
+                const matchCategory = currentCategory === "전체" || app.category === currentCategory;
+                const matchSearch = app.title.toLowerCase().includes(currentSearchQuery) || 
+                                    app.description.toLowerCase().includes(currentSearchQuery) ||
+                                    app.difficulty.toLowerCase().includes(currentSearchQuery) ||
+                                    app.category.toLowerCase().includes(currentSearchQuery);
+                return matchCategory && matchSearch;
+            });
+
+            // Sorting
+            const sorted = getSortedApps(filtered);
+
+            // Item Counter update
+            document.getElementById('itemCount').innerText = `${currentCategory} (${sorted.length})`;
+
+            let html = sorted.map(app => {
+                const theme = themeMap[app.theme] || themeMap.indigo;
+                
+                // Determine layout top thumbnail
+                let thumbnailHtml = "";
+                if (app.thumbnailUrl) {
+                    thumbnailHtml = `<img src="${app.thumbnailUrl}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/400x250/f1f5f9/3b82f6?text=Image+Error'"/>`;
+                } else {
+                    thumbnailHtml = app.svgIcon || genericIcons[app.theme](theme.stroke);
+                }
+
+                // Badges overlay
+                let badgeNewHtml = app.isNew 
+                    ? `<span class="absolute top-3 left-3 bg-red-500 text-white font-extrabold text-[10px] px-2 py-0.5 rounded-md uppercase tracking-wider shadow-sm">NEW</span>` 
+                    : ``;
+                let badgeRecommendHtml = app.isRecommended 
+                    ? `<span class="absolute top-3 right-3 bg-amber-400 text-slate-800 font-extrabold text-[10px] px-2 py-0.5 rounded-md flex items-center space-x-0.5 shadow-sm">⭐ 추천</span>` 
+                    : ``;
+
+                return `
+                    <div class="group bg-white rounded-[28px] border border-slate-100/80 p-0 overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between relative">
+                        <div>
+                            <!-- Header Image Banner with decorative icon -->
+                            <div class="w-full h-36 bg-slate-200/50 relative flex items-center justify-center overflow-hidden">
+                                ${thumbnailHtml}
+                                ${badgeNewHtml}
+                                ${badgeRecommendHtml}
+                            </div>
+
+                            <!-- Content Specs -->
+                            <div class="p-5">
+                                <!-- Category Tag in colored font -->
+                                <span class="text-xs font-bold text-blue-500 tracking-wider">
+                                    ${app.category} 학습
+                                </span>
+                                
+                                <!-- App Name -->
+                                <h3 class="font-bold text-slate-900 text-lg leading-snug mt-1.5 mb-2 line-clamp-1 group-hover:text-blue-600 transition-colors duration-200">
+                                    ${app.title}
+                                </h3>
+                                
+                                <!-- Short Description -->
+                                <p class="text-xs sm:text-sm text-slate-400 line-clamp-2 leading-relaxed mb-6 font-normal">
+                                    ${app.description}
+                                </p>
+
+                                <!-- Metadata Footer (Difficulty & Estimated Time) -->
+                                <div class="flex items-center space-x-4 text-xs font-bold text-slate-400">
+                                    <!-- Bar Chart graphic for Difficulty -->
+                                    <div class="flex items-center space-x-1.5">
+                                        <svg class="h-4 w-4 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2z" />
+                                        </svg>
+                                        <span>난이도 ${app.difficulty}</span>
+                                    </div>
+                                    <!-- Clock graphic for duration -->
+                                    <div class="flex items-center space-x-1.5">
+                                        <svg class="h-4 w-4 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        <span>${app.duration}분</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Button Controls bottom bar -->
+                        <div class="p-5 pt-0 flex space-x-2">
+                            <!-- Show details trigger -->
+                            <button onclick="openDetailModal('${app.id}')" 
+                                class="w-1/3 py-3 rounded-2xl bg-slate-100 hover:bg-slate-200/80 text-slate-700 font-bold text-xs sm:text-sm transition-all text-center">
+                                상세
+                            </button>
+                            <!-- Direct launch URL link -->
+                            <a href="${app.url}" target="_blank" 
+                                class="w-2/3 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm transition-all text-center flex items-center justify-center space-x-1">
+                                <span>▶ 실행</span>
+                            </a>
+                        </div>
+
+                        <!-- Trash/Delete button for added customs with lock protection -->
+                        ${!app.isPreset ? `
+                            <button onclick="deleteApp('${app.id}')" 
+                                class="absolute top-2 left-2 bg-white/90 hover:bg-rose-50 border border-slate-100 p-1.5 rounded-xl opacity-0 group-hover:opacity-100 text-slate-400 hover:text-rose-500 transition-all duration-200" title="웹앱 삭제">
+                                <svg class="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </button>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+
+            // Plus template Card at the end of the Grid layout
+            html += `
+                <div onclick="openModal()" class="group border-2 border-dashed border-slate-200 hover:border-blue-400 rounded-[28px] p-6 flex flex-col items-center justify-center text-center cursor-pointer min-h-[350px] bg-white hover:bg-blue-50/10 transition-all duration-300 hover:shadow-lg">
+                    <div class="w-12 h-12 rounded-2xl bg-slate-100 group-hover:bg-blue-100 flex items-center justify-center mb-4 transition-all duration-300 group-hover:scale-110">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-400 group-hover:text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                        </svg>
+                    </div>
+                    <h3 class="font-bold text-slate-700 group-hover:text-blue-600 transition-colors text-base mb-1">새로운 실험실 연결</h3>
+                    <p class="text-xs text-slate-400 max-w-[200px]">제목과 주소를 넣어 직접 개발하신 전용 앱을 그리드에 손쉽게 추가하세요.</p>
+                </div>
+            `;
+
+            grid.innerHTML = html;
+        }
+
+        // Preview local Image upload
+        function previewThumbnail(event) {
+            const file = event.target.files[0];
+            const previewContainer = document.getElementById('thumbnailPreviewContainer');
+            const previewImage = document.getElementById('thumbnailPreview');
+            
+            if (file) {
+                // Constraint: Max size to prevent browser crash
+                if (file.size > 2 * 1024 * 1024) {
+                    showError("썸네일 파일 크기는 2MB 이하여야 합니다.");
+                    event.target.value = "";
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    uploadedImageBase64 = e.target.result;
+                    previewImage.src = uploadedImageBase64;
+                    previewContainer.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            } else {
+                uploadedImageBase64 = "";
+                previewContainer.classList.add('hidden');
+            }
+        }
+
+        // Add App Modal toggles
+        function openModal() {
+            document.getElementById('addModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            clearError();
+        }
+
+        function closeModal() {
+            document.getElementById('addModal').classList.add('hidden');
+            document.body.style.overflow = '';
+            document.getElementById('addAppForm').reset();
+            document.getElementById('thumbnailPreviewContainer').classList.add('hidden');
+            uploadedImageBase64 = "";
+            clearError();
+        }
+
+        function showError(msg) {
+            const container = document.getElementById('formError');
+            const label = document.getElementById('errorMsg');
+            label.innerText = msg;
+            container.classList.remove('hidden');
+        }
+
+        function clearError() {
+            document.getElementById('formError').classList.add('hidden');
+        }
+
+        // Save Custom webapp
+        function saveApp(e) {
+            e.preventDefault();
+            
+            const adminCodeInput = document.getElementById('adminCode').value;
+            const title = document.getElementById('appTitle').value.trim();
+            const url = document.getElementById('appUrl').value.trim();
+            const description = document.getElementById('appDesc').value.trim();
+            const category = document.getElementById('appCategory').value;
+            const theme = document.getElementById('appTheme').value;
+            const difficulty = document.getElementById('appDifficulty').value;
+            const duration = document.getElementById('appDuration').value.trim();
+            const isNew = document.getElementById('badgeNew').checked;
+            const isRecommended = document.getElementById('badgeRecommend').checked;
+
+            // Admin verify code check
+            if (adminCodeInput !== ADMIN_CODE) {
+                showError("관리자 인증 코드가 올바르지 않습니다.");
+                return;
+            }
+
+            // Url validation checks
+            try {
+                new URL(url);
+            } catch (_) {
+                showError("올바른 웹페이지 URL 형식이 아닙니다. (예: https://...)");
+                return;
+            }
+
+            const newApp = {
+                id: 'custom-' + Date.now(),
+                title,
+                url,
+                description,
+                category,
+                theme,
+                difficulty,
+                duration: duration || "10",
+                isNew,
+                isRecommended,
+                thumbnailUrl: uploadedImageBase64 || null,
+                isPreset: false
+            };
+
+            apps.push(newApp);
+            saveToLocalStorage();
+            renderCategoryTabs();
+            renderApps();
+            closeModal();
+        }
+
+        // Delete custom items
+        function deleteApp(appId) {
+            const password = prompt("관리자 암호를 입력하시면 선택한 웹앱을 포털에서 영구히 삭제합니다:");
+            if (password === null) return; // Cancel trigger
+            
+            if (password === ADMIN_CODE) {
+                apps = apps.filter(app => app.id !== appId);
+                saveToLocalStorage();
+                renderCategoryTabs();
+                renderApps();
+            } else {
+                const prevTitle = document.title;
+                document.title = "⚠️ 관리자 암호가 다릅니다";
+                setTimeout(() => document.title = prevTitle, 2500);
+            }
+        }
+
+        // Detail Popup actions (클릭 "상세" 버튼)
+        function openDetailModal(appId) {
+            const app = apps.find(a => a.id === appId);
+            if (!app) return;
+
+            document.getElementById('modalCategory').innerText = `${app.category} 학습`;
+            document.getElementById('modalTitle').innerText = app.title;
+            document.getElementById('modalDesc').innerText = app.description;
+            document.getElementById('modalDifficulty').innerText = app.difficulty;
+            document.getElementById('modalDuration').innerText = `${app.duration}분`;
+            
+            const launchBtn = document.getElementById('modalLaunchBtn');
+            launchBtn.href = app.url;
+
+            document.getElementById('detailModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detailModal').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        // Policy Modal Contents Data
+        const policyTexts = {
+            terms: `
+                <div class="prose prose-slate max-w-none text-xs sm:text-sm text-slate-600 leading-relaxed space-y-5">
+                    <div>
+                        <h4 class="text-base font-extrabold text-slate-900 mb-2">학습용 웹앱 포털 서비스 이용약관</h4>
+                        <p class="text-slate-500">본 이용약관은 교사가 개발한 학급 활동 지원 프로그램 <strong>'학습용 웹앱 포털'</strong>(이하 "본 서비스")의 이용 조건 및 절차, 이용자와 개발자의 권리, 의무 및 책임 사항을 규정함을 목적으로 합니다.</p>
+                    </div>
+                    
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 space-y-2">
+                        <h5 class="font-bold text-slate-800 text-xs sm:text-sm uppercase tracking-wider">1. 웹사이트 게시 정보 (이용자 안내)</h5>
+                        <p class="text-xs">본 서비스는 별도의 회원가입 없이 브라우저의 로컬 저장소(LocalStorage)를 사용하여 학생 명단 및 추첨 기록을 관리하는 무설치형 교육 도구입니다.</p>
+                        <ul class="list-disc pl-5 text-xs space-y-1 mt-1">
+                            <li><strong>개발자(개인정보 보호책임자)</strong>: 홍민아</li>
+                            <li><strong>소속 학교</strong>: 우신중학교</li>
+                            <li><strong>문의처</strong>: 02-2610-1621</li>
+                            <li><strong>저장 방식</strong>: 본 서비스는 학생 정보를 서버로 전송하거나 수집하지 않으며, 이용자의 기기(브라우저) 내에만 임시 저장됩니다.</li>
+                        </ul>
+                    </div>
+
+                    <div class="space-y-2">
+                        <h5 class="font-bold text-slate-800 text-sm">제1조 (목적)</h5>
+                        <p>본 약관은 홍민아(이하 "개발자")가 개발한 교육용 발표자 추첨 프로그램 <strong>'학습용 웹앱 포털'</strong>(이하 "본 서비스")를 이용자가 이용함에 있어 필요한 제반 사항을 규정하는 것을 목적으로 합니다.</p>
+                    </div>
+
+                    <div class="space-y-2">
+                        <h5 class="font-bold text-slate-800 text-sm">제2조 (용어의 정의)</h5>
+                        <ol class="list-decimal pl-5 space-y-1">
+                            <li><strong>"이용자"</strong>란 본 서비스에 접속하여 서비스를 이용하는 교사 및 학생을 말합니다.</li>
+                            <li><strong>"기기 데이터"</strong>란 이용자가 학급 운영을 위해 직접 등록한 학생 명단, 추첨 히스토리, 윤리 가이드 서약 여부 등 브라우저 로컬 스토리지(LocalStorage)에 저장되는 데이터를 말합니다.</li>
+                        </ol>
+                    </div>
+
+                    <div class="space-y-2">
+                        <h5 class="font-bold text-slate-800 text-sm">제3조 (약관의 효력 및 변경)</h5>
+                        <ol class="list-decimal pl-5 space-y-1">
+                            <li>본 약관은 서비스 메인 화면 하단 또는 최초 진입 시 링크를 통해 게시함으로써 효력이 발생합니다.</li>
+                            <li>개발자는 교육적 목적 또는 법령의 변경에 따라 본 약관을 변경할 수 있으며, 변경된 약관은 서비스 내에 고지합니다.</li>
+                        </ol>
+                    </div>
+
+                    <div class="space-y-2">
+                        <h5 class="font-bold text-slate-800 text-sm">제4조 (서비스의 이용 및 제한)</h5>
+                        <ol class="list-decimal pl-5 space-y-1">
+                            <li>본 서비스는 학교 수업, 학급 활동 등 비상업적인 교육적 목적으로만 무료로 이용할 수 있습니다.</li>
+                            <li>상업적인 목적의 이용, 시스템에 무단으로 위해를 가하는 행위 등은 금지되며, 부적절한 이용 시 서비스 이용이 제한될 수 있습니다.</li>
+                        </ol>
+                    </div>
+
+                    <div class="space-y-2">
+                        <h5 class="font-bold text-slate-800 text-sm">제5조 (개발자의 의무)</h5>
+                        <ol class="list-decimal pl-5 space-y-1">
+                            <li>개발자는 학교 교육 활동이 원활히 이루어질 수 있도록 안정적이고 쾌적한 서비스를 제공하기 위해 노력합니다.</li>
+                            <li>개발자는 이용자의 개인정보를 전송받거나 수집하지 않으며, 브라우저 환경에서 안전하게 작동하도록 소프트웨어를 관리합니다.</li>
+                        </ol>
+                    </div>
+
+                    <div class="space-y-2">
+                        <h5 class="font-bold text-slate-800 text-sm">제6조 (이용자의 의무)</h5>
+                        <ol class="list-decimal pl-5 space-y-1">
+                            <li>이용자는 본 약관 및 교육 현장의 윤리적 가이드라인을 준수해야 합니다.</li>
+                            <li>이용자가 입력한 학생 명단 및 데이터는 이용자 본인의 기기에 저장되므로, 기기 분실이나 브라우저 초기화로 인해 데이터가 유실되지 않도록 관리할 책임은 이용자에게 있습니다.</li>
+                            <li>생성형 AI 활용 윤리 핵심가이드를 준수하고 실천할 의무가 있습니다.</li>
+                        </ol>
+                    </div>
+
+                    <div class="space-y-2">
+                        <h5 class="font-bold text-slate-800 text-sm">제7조 (면책 조항)</h5>
+                        <ol class="list-decimal pl-5 space-y-1">
+                            <li>본 서비스는 교육적 공익 목적으로 개발되어 무상으로 제공되는 소프트웨어입니다. 서비스 이용 중 발생한 데이터의 일시적 유실이나 장애에 대해 개발자는 고의 또는 중과실이 없는 한 책임을 지지 않습니다.</li>
+                            <li>인터넷 환경, 학교 방화벽 및 네트워크 설정으로 인해 발생하는 서비스의 접속 지연 및 제한에 대해서는 책임을 지지 않습니다.</li>
+                        </ol>
+                    </div>
+
+                    <div class="space-y-2">
+                        <h5 class="font-bold text-slate-800 text-sm">제8조 (분쟁 해결 및 관할 법원)</h5>
+                        <p>본 서비스의 이용과 관련하여 분쟁이 발생할 경우, 상호 협의하여 교육적으로 해결하는 것을 원칙으로 하며, 부득이 소송이 제기될 경우 개발자 소속 학교 관할 법원을 합의 관할 법원을 합의 관할 법원으로 합니다.</p>
+                    </div>
+
+                    <div class="space-y-1 mt-4 pt-3 border-t border-slate-100 text-xs">
+                        <p><strong>부칙</strong></p>
+                        <p class="text-slate-400">본 약관은 2026년 6월 27일부터 시행합니다.</p>
+                    </div>
+                </div>
+            `,
+            privacy: `
+                <div class="prose prose-slate max-w-none text-xs sm:text-sm text-slate-600 leading-relaxed space-y-5">
+                    <div>
+                        <h4 class="text-base font-extrabold text-slate-900 mb-2">학습용 웹앱 포털 개인정보처리방침</h4>
+                        <p class="text-slate-500"><strong>'학습용 웹앱 포털'</strong>(이하 "본 서비스")은(는) 개인정보 보호법 제30조에 따라 정보주체의 개인정보를 보호하고 이와 관련한 고충을 신속하고 원활하게 처리할 수 있도록 하기 위하여 다음과 같이 개인정보 처리방침을 수립·공개합니다.</p>
+                    </div>
+
+                    <div class="space-y-2">
+                        <h5 class="font-bold text-slate-800 text-sm">제1조 (개인정보의 처리 목적)</h5>
+                        <p>본 서비스는 학교 수업 및 학급 운영 중 발표자 추첨(Lucky Draw)을 원활하게 수행하기 위한 최소한의 데이터를 처리합니다. 본 서비스는 <strong>별도의 회원가입 없이 이용할 수 있는 순수 클라이언트 사이드 웹 애플리케이션</strong>으로, 어떠한 경우에도 수집된 정보를 서버에 전송하거나 타인에게 공유하지 않습니다.</p>
+                        <ul class="list-disc pl-5 space-y-1">
+                            <li><strong>학생 명단 관리</strong>: 학급 발표자 추첨 대상을 식별하기 위한 목적</li>
+                            <li><strong>추첨 이력 관리</strong>: 수업 중 발표 순서 확인 및 공정한 추첨 기록 보관을 위한 목적</li>
+                        </ul>
+                    </div>
+
+                    <div class="space-y-2">
+                        <h5 class="font-bold text-slate-800 text-sm">제2조 (개인정보의 처리 및 보유기간)</h5>
+                        <ol class="list-decimal pl-5 space-y-1">
+                            <li>본 서비스는 서비스의 작동 특성상 이용자가 직접 입력한 데이터를 웹 브라우저의 <strong>로컬 스토리지(LocalStorage)</strong>에만 보관하며, 외부 서버에 저장하지 않습니다.</li>
+                            <li><strong>보유 기간</strong>: 이용자가 직접 웹 브라우저의 임시 인터넷 파일(캐시 및 쿠키)을 삭제하거나 서비스 내에서 '학생 목록 초기화' 버튼을 누르기 전까지 보존됩니다. 교육 활동 목적이 완료되는 해당 학년도 종료 시(익년 2월 말) 또는 진급 시 이용자는 스스로 데이터를 초기화할 것을 권장합니다.</li>
+                        </ol>
+                    </div>
+
+                    <div class="space-y-2">
+                        <h5 class="font-bold text-slate-800 text-sm">제3조 (처리하는 개인정보 항목)</h5>
+                        <p>본 서비스는 기능 수행을 위해 필요한 최소한의 데이터만 입력받습니다.</p>
+                        <ul class="list-disc pl-5 space-y-1">
+                            <li><strong>필수 항목</strong>: 이용자가 등록한 학생 이름 (또는 닉네임)</li>
+                            <li><strong>자동 수집 항목</strong>: 최근 추첨 이력(이름 및 추첨 시간), 윤리 핵심가이드 서약 완료 여부</li>
+                            <li><strong>수집하지 않는 항목</strong>: 비밀번호, 주민등록번호, 연락처, 이메일, 주소 등 불필요한 민감 정보는 일체 수집하거나 입력받지 않습니다.</li>
+                        </ul>
+                    </div>
+
+                    <div class="space-y-2">
+                        <h5 class="font-bold text-slate-800 text-sm">제4조 (만 14세 미만 아동의 개인정보 처리에 관한 사항)</h5>
+                        <ol class="list-decimal pl-5 space-y-1">
+                            <li>본 서비스는 오직 기기(웹 브라우저) 내에서만 데이터가 기록되므로 외부로 개인정보가 유출될 우려가 없습니다.</li>
+                            <li>단, 원활한 교육 활동과 학급 명단 관리를 위해 필요한 경우, 학교 또는 교사는 학기 초 가정통신문(개인정보 수집·이용 동의서)을 통하여 법정대리인의 동의를 득한 후 학생 명단을 등록하여 활용하시기 바랍니다.</li>
+                        </ol>
+                    </div>
+
+                    <div class="space-y-2">
+                        <h5 class="font-bold text-slate-800 text-sm">제5조 (개인정보의 파기 절차 및 방법)</h5>
+                        <p>본 서비스는 이용자가 직접 데이터를 완벽하게 파기할 수 있는 통제권을 가집니다.</p>
+                        <ol class="list-decimal pl-5 space-y-1">
+                            <li><strong>파기 절차</strong>: 이용자가 서비스 내의 <strong>[학생 목록 초기화]</strong> 버튼이나 <strong>[기록 지우기]</strong> 버튼을 클릭하면 관련 데이터가 즉시 삭제됩니다.</li>
+                            <li><strong>파기 방법</strong>: 브라우저 로컬 저장소(LocalStorage)에서 해당 항목을 영구 삭제(Remove Item) 처리합니다.</li>
+                        </ol>
+                    </div>
+
+                    <div class="space-y-2">
+                        <h5 class="font-bold text-slate-800 text-sm">제6조 (개인정보의 안전성 확보조치)</h5>
+                        <p>본 서비스는 개인정보의 안전성 확보를 위해 다음과 같은 조치를 취하고 있습니다.</p>
+                        <ol class="list-decimal pl-5 space-y-1">
+                            <li><strong>서버 수집 배제</strong>: 데이터를 보관하는 데이터베이스 서버를 두지 않고 이용자의 로컬 웹 브라우저 저장소만 이용하므로, 서버 해킹 등으로 인한 대규모 개인정보 유출 위험이 원천적으로 차단됩니다.</li>
+                            <li><strong>보안 전송(HTTPS)</strong>: 웹 페이지 접속 시 HTTPS 보안 통신 프로토콜을 적용하여 데이터 전송 구간에서의 도청이나 위변조를 예방합니다.</li>
+                        </ol>
+                    </div>
+
+                    <div class="space-y-2">
+                        <h5 class="font-bold text-slate-800 text-sm">제7조 (정보주체와 법정대리인의 권리·의무 및 행사방법)</h5>
+                        <ol class="list-decimal pl-5 space-y-1">
+                            <li>정보주체(학생) 및 법정대리인은 언제든지 개인정보의 열람, 수정, 삭제를 요구할 수 있습니다.</li>
+                            <li>본 서비스는 서버가 없는 로컬 앱이므로, 이용자가 직접 브라우저 화면 상에서 학생 명단을 수정하거나 삭제함으로써 즉시 권리 행사가 가능합니다.</li>
+                        </ol>
+                    </div>
+
+                    <div class="space-y-2">
+                        <h5 class="font-bold text-slate-800 text-sm">제8조 (개인정보 보호책임자)</h5>
+                        <p>본 서비스는 이용자의 개인정보 관련 문의 및 고충을 처리하기 위해 아래와 같이 개인정보 보호책임자를 지정하고 있습니다.</p>
+                        <ul class="list-disc pl-5 space-y-1 text-slate-500">
+                            <li><strong>성명</strong>: 홍민아 (개발자)</li>
+                            <li><strong>소속</strong>: 우신중학교</li>
+                            <li><strong>직위</strong>: 교사</li>
+                            <li><strong>연락처</strong>: 02-2610-1621</li>
+                        </ul>
+                        <p class="text-xs text-slate-400 italic">※ 개인정보 보호를 위해 교사의 개인 휴대전화 번호는 기재하지 않습니다.</p>
+                    </div>
+
+                    <div class="space-y-1 mt-4 pt-3 border-t border-slate-100 text-xs">
+                        <p><strong>제9조 (개인정보 처리방침 변경)</strong></p>
+                        <p class="text-slate-400">본 개인정보 처리방침은 2026년 6월 27일부터 적용됩니다.</p>
+                    </div>
+                </div>
+            `
+        };
+
+        // Open Policy Modal
+        function openPolicyModal(type) {
+            const titleElement = document.getElementById('policyModalTitle');
+            const contentElement = document.getElementById('policyModalContent');
+            
+            if (type === 'terms') {
+                titleElement.innerHTML = '📄 &nbsp; 서비스 이용약관';
+                contentElement.innerHTML = policyTexts.terms;
+            } else if (type === 'privacy') {
+                titleElement.innerHTML = '🛡️ &nbsp; 개인정보처리방침';
+                contentElement.innerHTML = policyTexts.privacy;
+            }
+
+            document.getElementById('policyModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Close Policy Modal
+        function closePolicyModal() {
+            document.getElementById('policyModal').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+    </script>
+</body>
+</html>
