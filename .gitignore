@@ -2,3 +2,5 @@
 node_modules/
 *.log
 .gemini/
+.env
+.env.local

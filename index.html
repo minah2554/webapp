@@ -1056,9 +1056,11 @@
             renderApps();
         }
 
-        // AI Description Auto-generator (Customizable placeholder for AI APIs)
+        // AI Description Auto-generator (Calling /api/gemini-counseling securely)
         async function generateAIDescription() {
             const urlInput = document.getElementById('appUrl').value.trim();
+            const titleInput = document.getElementById('appTitle').value.trim();
+            
             if (!urlInput) {
                 showError("AI 자동 작성을 위해 먼저 웹앱 주소(Link)를 입력해주세요.");
                 return;
@@ -1070,31 +1072,28 @@
             descTextarea.value = "AI가 웹앱 분석 및 한 줄 소개 생성 중...";
 
             try {
-                // 이 함수는 사용자가 필요에 따라 자신의 AI API(예: OpenAI, Gemini 등)를 호출하는 코드로 커스텀할 수 있습니다.
-                // 예시:
-                // const response = await fetch('https://api.openai.com/v1/chat/completions', { ... });
-                
-                // 가상의 지연 시간(1.2초)을 두고 URL 명칭을 분석하여 알맞은 학습 도구 한 줄 요약을 생성합니다.
-                await new Promise(resolve => setTimeout(resolve, 1200));
+                const response = await fetch('/api/gemini-counseling', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        title: titleInput,
+                        url: urlInput
+                    })
+                });
 
-                const urlObj = new URL(urlInput);
-                const hostname = urlObj.hostname.replace('www.', '').split('.')[0];
-                const capitalized = hostname.charAt(0).toUpperCase() + hostname.slice(1);
-
-                if (urlInput.includes("light-color-lab")) {
-                    descTextarea.value = "빛의 삼원색 조합을 조작하여 조명에 따른 색상 변화를 실시간으로 탐색하는 물리 시뮬레이터입니다.";
-                } else if (urlInput.includes("mirrorescape")) {
-                    descTextarea.value = "거울 반사의 성질과 공간 대칭 개념을 재미있게 해결해 나가는 체험형 방탈출 에듀 게임입니다.";
-                } else if (urlInput.includes("classpi") || urlInput.includes("CLASSPI")) {
-                    descTextarea.value = "학급 화폐 거래 내역과 개인 자산을 모니터링하고 가상 경제 활동을 돕는 통합 학급 금융 시스템입니다.";
-                } else if (urlInput.includes("draw") || urlInput.includes("random")) {
-                    descTextarea.value = "학급 내에서 공정하고 흥미진진하게 발표자 추첨 또는 랜덤 아이템을 선택할 수 있는 수업 유틸리티입니다.";
-                } else {
-                    descTextarea.value = `${capitalized} 플랫폼에서 제공하는 학생 참여 유도형 수업용 상호작용 웹앱 도구입니다.`;
+                if (!response.ok) {
+                    const errData = await response.json().catch(() => ({}));
+                    throw new Error(errData.error || 'Server returned an error');
                 }
+
+                const data = await response.json();
+                descTextarea.value = data.summary || '';
                 clearError();
             } catch (err) {
-                showError("AI 요약 생성 중 오류가 발생했습니다. 직접 작성하시거나 다시 시도해 주세요.");
+                console.error(err);
+                showError("AI 요약 생성 중 오류가 발생했습니다: " + err.message);
                 descTextarea.value = "";
             } finally {
                 descTextarea.disabled = false;
