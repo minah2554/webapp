@@ -48,6 +48,9 @@
             background: #94a3b8;
         }
     </style>
+    <!-- Firebase Compat SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
 
 <body class="min-h-screen text-slate-800 antialiased selection:bg-blue-100">
@@ -592,30 +595,60 @@
         // Static list of school subjects (Exactly mapping to the image uploaded by user)
         const FIXED_CATEGORIES = ["전체", "수업", "교과", "학급", "업무", "기타"];
 
+        // Initialize Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyA9FyeWf6cBTxlhgIZ8ytDFUrW5tjpDNws",
+            authDomain: "minah-s-digital-platform.firebaseapp.com",
+            projectId: "minah-s-digital-platform",
+            storageBucket: "minah-s-digital-platform.firebasestorage.app",
+            messagingSenderId: "757404607376",
+            appId: "1:757404607376:web:a5a566d65bfc199f910915"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
         // Init on window load
         window.addEventListener('DOMContentLoaded', () => {
-            loadApps();
-            renderCategoryTabs();
+            initAppSync();
             updateAdminUI();
         });
 
-        // Load DB from local storage
-        function loadApps() {
-            const savedData = localStorage.getItem('minah_portal_apps');
-            if (savedData) {
-                try {
-                    apps = JSON.parse(savedData);
-                } catch (e) {
-                    apps = [...initialApps];
+        // Real-time Cloud Synchronization (Firestore)
+        function initAppSync() {
+            db.collection("apps").onSnapshot((snapshot) => {
+                if (snapshot.empty) {
+                    // Seed initial preset apps into Firestore database automatically
+                    seedPresets();
+                    return;
                 }
-            } else {
+                apps = [];
+                snapshot.forEach(doc => {
+                    apps.push(doc.data());
+                });
+                renderCategoryTabs();
+                renderApps();
+            }, (error) => {
+                console.error("Firestore Error:", error);
+                // Fallback locally if network or rules fail
                 apps = [...initialApps];
-                saveToLocalStorage();
-            }
+                renderCategoryTabs();
+                renderApps();
+            });
         }
 
-        function saveToLocalStorage() {
-            localStorage.setItem('minah_portal_apps', JSON.stringify(apps));
+        async function seedPresets() {
+            try {
+                console.log("Firestore empty. Seeding initial apps...");
+                const batch = db.batch();
+                initialApps.forEach(app => {
+                    const docRef = db.collection("apps").doc(app.id);
+                    batch.set(docRef, app);
+                });
+                await batch.commit();
+            } catch (err) {
+                console.error("Failed to seed initial apps:", err);
+            }
         }
 
         // Render 과목 필터 Tabs
@@ -948,42 +981,42 @@
                 return;
             }
 
+            let targetId = editingAppId;
+            let isPreset = false;
+            
             if (editingAppId) {
-                const index = apps.findIndex(a => a.id === editingAppId);
-                if (index !== -1) {
-                    apps[index].title = title;
-                    apps[index].url = url;
-                    apps[index].description = description;
-                    apps[index].category = category;
-                    apps[index].theme = theme;
-                    apps[index].difficulty = difficulty;
-                    apps[index].duration = duration || "10";
-                    apps[index].isNew = isNew;
-                    apps[index].isRecommended = isRecommended;
-                    apps[index].thumbnailUrl = uploadedImageBase64 || null;
+                const existing = apps.find(a => a.id === editingAppId);
+                if (existing && existing.isPreset) {
+                    isPreset = true;
                 }
             } else {
-                const newApp = {
-                    id: 'custom-' + Date.now(),
-                    title,
-                    url,
-                    description,
-                    category,
-                    theme,
-                    difficulty,
-                    duration: duration || "10",
-                    isNew,
-                    isRecommended,
-                    thumbnailUrl: uploadedImageBase64 || null,
-                    isPreset: false
-                };
-                apps.push(newApp);
+                targetId = 'custom-' + Date.now();
             }
 
-            saveToLocalStorage();
-            renderCategoryTabs();
-            renderApps();
-            closeModal();
+            const appData = {
+                id: targetId,
+                title,
+                url,
+                description,
+                category,
+                theme,
+                difficulty,
+                duration: duration || "10",
+                isNew,
+                isRecommended,
+                thumbnailUrl: uploadedImageBase64 || null,
+                isPreset: isPreset
+            };
+
+            // Write to Firestore (will automatically trigger onSnapshot real-time sync)
+            db.collection("apps").doc(targetId).set(appData)
+                .then(() => {
+                    closeModal();
+                })
+                .catch((err) => {
+                    console.error("Error saving webapp to Firestore:", err);
+                    showError("서버 저장 중 오류가 발생했습니다: " + err.message);
+                });
         }
 
         // Delete custom/preset items (Requires Admin Login session)
@@ -997,10 +1030,12 @@
             const appName = app ? `[${app.title}]` : "이 웹앱";
 
             if (confirm(`${appName}을(를) 포털에서 정말 삭제하시겠습니까?`)) {
-                apps = apps.filter(app => app.id !== appId);
-                saveToLocalStorage();
-                renderCategoryTabs();
-                renderApps();
+                // Delete from Firestore (triggers onSnapshot real-time sync)
+                db.collection("apps").doc(appId).delete()
+                    .catch((err) => {
+                        console.error("Error deleting webapp from Firestore:", err);
+                        alert("서버 삭제 중 오류가 발생했습니다: " + err.message);
+                    });
             }
         }
 
