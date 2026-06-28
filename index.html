@@ -563,7 +563,6 @@
         ];
 
         // System Constants & State
-        const ADMIN_CODE = "classplay"; // 관리자 비밀번호
         let isAdmin = sessionStorage.getItem('isAdmin') === 'true'; // 관리자 권한 상태
         let apps = [];
         let editingAppId = null; // 현재 수정 중인 웹앱 ID (null이면 추가 모드)
@@ -787,7 +786,7 @@
 
                         <!-- Admin edit and delete controls -->
                         ${isAdmin ? `
-                            <div class="absolute top-2 left-2 flex space-x-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
+                            <div class="absolute top-2 left-2 flex space-x-1.5 z-10">
                                 <button onclick="openEditModal('${app.id}')" 
                                     class="bg-white hover:bg-blue-50 border border-slate-200 p-2 rounded-xl text-black hover:text-blue-600 transition-all duration-200 shadow-md" title="웹앱 수정">
                                     <svg class="h-5.5 w-5.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
@@ -1018,16 +1017,37 @@
             document.body.style.overflow = '';
         }
 
-        function handleLoginSubmit(e) {
+        async function handleLoginSubmit(e) {
             e.preventDefault();
             const pw = document.getElementById('loginPassword').value;
-            if (pw === ADMIN_CODE) {
-                isAdmin = true;
-                sessionStorage.setItem('isAdmin', 'true');
-                closeLoginModal();
-                updateAdminUI();
-            } else {
-                document.getElementById('loginError').classList.remove('hidden');
+            const errorLabel = document.getElementById('loginError');
+            errorLabel.classList.add('hidden');
+
+            try {
+                const response = await fetch('/api/admin-auth', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ password: pw })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Authentication network error');
+                }
+
+                const data = await response.json();
+                if (data.success) {
+                    isAdmin = true;
+                    sessionStorage.setItem('isAdmin', 'true');
+                    closeLoginModal();
+                    updateAdminUI();
+                } else {
+                    errorLabel.classList.remove('hidden');
+                }
+            } catch (err) {
+                console.error(err);
+                alert("서버 연결 실패 또는 인증 에러가 발생했습니다.");
             }
         }
 
