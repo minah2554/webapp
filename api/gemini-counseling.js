@@ -37,8 +37,8 @@ export default async function handler(req, res) {
     const prompt = `웹앱 이름: ${title || '이름 없음'}\n웹앱 주소: ${url}\n\n이 웹앱은 학교 수업 및 학급 운영 중 교사와 학생들이 활용하는 교육용 웹앱입니다. 이 웹앱의 이름과 주소 정보를 바탕으로, 해당 웹앱이 어떤 역할을 하고 무엇을 할 수 있는 앱인지 정중하고 명확한 한국어 한 문장(약 50자 내외, 최대 80자)의 '한 줄 소개'로 요약해 작성해 주세요. 요약 내용만 즉시 반환해야 하며, 따옴표나 서론("이 웹앱은 ~", "여기 소개입니다" 등)을 붙이지 마세요.`;
 
     // 5. Call Gemini API using built-in fetch
-    // Using model gemini-1.5-flash as the stable target
-    const model = 'gemini-1.5-flash';
+    // Using model gemini-3.1-flash-lite as requested
+    const model = 'gemini-3.1-flash-lite';
     const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
     try {
